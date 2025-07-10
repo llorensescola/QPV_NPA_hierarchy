@@ -14,7 +14,7 @@ from ncpol2sdpa import *
 
 #Fix the parameter xi, which is the probability that the attackers can respond different
 #NOTE: For the original case, when no error is allowed, set xi=0
-xi=0.0135
+xi=0.001
 I=cmath.sqrt(-1)
 #We choose the number of basis as stated in the paper: mu and mv correspond to the number of angles theta and phi, respectively. In the following, we recover QPVeta_BB84 from the extention to such a protocol to m bases
 mu=2
@@ -79,14 +79,14 @@ objective = -expand(objective)
 sdp = SdpRelaxation(flatten([A, B]), verbose=0)
 r = []
 #We find the upper boung given by the NPA hierarchy for different p_err and we apply the corresponding inequalities 
-for p_err in np.concatenate([np.arange(0,0.12,0.02),np.arange(0.12,0.17,0.005)]):
+for p_err in np.concatenate([np.arange(0,0.12,0.005),np.arange(0.12,0.15,0.005)]):
     inequalities = []
     inequalities = inequalities + [xi - mVar(A[x],a)*mVar(B[x],b) for x in range(m) for a in range(numA) for b in range(numB) if a!=b]
         
     
     for x in range(m):
         for y in range(m):    
-            inequalities += [p_err * (4*xi+mVar(A[x],0)*mVar(B[x],0) + mVar(A[x],1)*mVar(B[x],1) + mVar(A[y],0)*mVar(B[y],0) + mVar(A[y],1)*mVar(B[y],1))-sum((2-norm(V[x][a]+V[y][b]))*mVar(A[x],a)*mVar(B[y],b) for a in [0,1] for b in [0,1])]
+            inequalities += [p_err * (4*xi+mVar(A[x],0)*mVar(B[x],0) + mVar(A[x],1)*mVar(B[x],1) + mVar(A[y],0)*mVar(B[y],0) + mVar(A[y],1)*mVar(B[y],1))+8*xi-sum((2-norm(V[x][a]+V[y][b]))*mVar(A[x],a)*mVar(B[y],b) for a in [0,1] for b in [0,1])]
           
        
     
@@ -108,7 +108,8 @@ for p_err in np.concatenate([np.arange(0,0.12,0.02),np.arange(0.12,0.17,0.005)])
     sdp.solve(solver='Mosek')
     #We store the solution together with its corresponding value of p_err
     r.append((p_err, -sdp.primal))
-print()
+    print(-sdp.primal)
+print(r)
 
 
 
