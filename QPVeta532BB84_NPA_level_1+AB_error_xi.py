@@ -15,7 +15,7 @@ from ncpol2sdpa import *
 #Fix the parameter xi, which is the probability that the attackers can respond different
 #NOTE: For the original case, when no error is allowed, set xi=0
 
-xi=0.005
+xi=0.001
 I=cmath.sqrt(-1)
 #We start with the level 1 of the NPA hierarcy
 level = 1
@@ -125,7 +125,7 @@ for p_err in np.arange(0,0.25,0.005):
        
     for x in range(m):
         for y in range(m):    
-            inequalities += [p_err * (4*xi+mVar(A[x],0)*mVar(B[x],0) + mVar(A[x],1)*mVar(B[x],1) + mVar(A[y],0)*mVar(B[y],0) + mVar(A[y],1)*mVar(B[y],1))-sum((2-norm(V[x][a]+V[y][b]))*mVar(A[x],a)*mVar(B[y],b) for a in [0,1] for b in [0,1])]
+            inequalities += [p_err * (4*xi+mVar(A[x],0)*mVar(B[x],0) + mVar(A[x],1)*mVar(B[x],1) + mVar(A[y],0)*mVar(B[y],0) + mVar(A[y],1)*mVar(B[y],1))+8*xi-sum((2-norm(V[x][a]+V[y][b]))*mVar(A[x],a)*mVar(B[y],b) for a in [0,1] for b in [0,1])]
           
          
         
